@@ -9,3 +9,5 @@
 - Persist configured sources through reloads and add coverage for the storage utility.
 - Resolve Unsplash sourcing by following redirects to the concrete image asset.
 - Allow fullscreen tap-to-toggle playback with a paused overlay and swap the control to use an icon button.
+- Expand the pacing slider to exponential stops up to thirty minutes and surface pause directly on the viewport chrome.
+- Fit oversized images within the viewport and relocate play/fullscreen controls into overlay icons.

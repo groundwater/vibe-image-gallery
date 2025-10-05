@@ -213,6 +213,7 @@ export default function App(): JSX.Element {
             isFullscreen={isFullscreen}
             isPlaying={state.isPlaying}
             onTogglePlayback={handleTogglePlayback}
+            onToggleFullscreen={handleRequestFullscreen}
           />
           {!isFullscreen && (
             <GalleryControls
@@ -221,7 +222,6 @@ export default function App(): JSX.Element {
               paceMs={state.paceMs}
               onTogglePlayback={handleTogglePlayback}
               onPaceChange={handlePaceChange}
-              onFullscreen={handleRequestFullscreen}
             />
           )}
         </section>

@@ -58,4 +58,5 @@ If you are told to "release":
 
 <AGENT>
 - 2025-10-04: App scaffolded with Vite/React/TS. `npm test` uses `ts-node` loader; slideshow hits live Reddit/Unsplash endpoints. Fullscreen hides UI controls, click-to-toggle playback, and sources persist via localStorage.
+- 2025-10-04: Pace slider now uses exponential stops to 30m; playback controls live on the viewport overlay (center play, corner pause/fullscreen).
 </AGENT>
