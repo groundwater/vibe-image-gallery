@@ -63,4 +63,5 @@ If you are told to "release":
 - 2025-10-05: Reddit presets live in `SourcePresetCatalog.mts`; `handleAddPreset` skips duplicates and surfaces a message if everything already exists.
 - 2025-10-05: Source list now scrolls with a Clear-all button; preset form stays static to avoid nested scrolling, and a City preset highlights urban-focused subreddits.
 - 2025-10-05: Fullscreen chrome auto-hides after idle, `f` toggles fullscreen, pace persists via `PacePersistence`, and Unsplash inputs require `?unsplash=on`.
+- 2025-10-05: Arrow keys walk slideshow history (with timer resets) and space toggles playback; `GalleryImagePicker` centralizes random fetches.
 </AGENT>
