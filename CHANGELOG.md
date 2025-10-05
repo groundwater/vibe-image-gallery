@@ -1,5 +1,9 @@
 # Changelog
 
+## [Unreleased]
+
+- Resize the gallery viewport with the window and ensure images scale to the available space. (#4)
+
 ## [0.1.0] - 2025-10-04
 
 - Scaffold the initial Vite + React TypeScript gallery experience with live Reddit and Unsplash sources.
