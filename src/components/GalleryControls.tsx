@@ -1,4 +1,5 @@
 import { ChangeEvent } from 'react'
+import { Maximize2 } from 'lucide-react'
 
 interface GalleryControlsProps {
   readonly isPlaying: boolean
@@ -26,11 +27,12 @@ export default function GalleryControls(props: GalleryControlsProps): JSX.Elemen
   return (
     <div className="gallery-controls">
       <div className="gallery-controls__main">
-        <button type="button" onClick={onTogglePlayback} disabled={!canPlay}>
+        <button type="button" onClick={onTogglePlayback} disabled={!canPlay} className="gallery-controls__toggle">
           {isPlaying ? 'Pause' : 'Play'}
         </button>
-        <button type="button" onClick={onFullscreen}>
-          Full Screen
+        <button type="button" onClick={onFullscreen} className="gallery-controls__fullscreen">
+          <Maximize2 aria-hidden="true" />
+          <span className="sr-only">Toggle full screen</span>
         </button>
       </div>
       <label className="gallery-controls__slider">

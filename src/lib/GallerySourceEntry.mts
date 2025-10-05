@@ -1,9 +1,23 @@
-import { GallerySource } from './GallerySourceFactory.mts'
+import { GallerySource, GallerySourceFactory, GallerySourceKind } from './GallerySourceFactory.mts'
 import { CHECK } from './Assertions.mts'
+
+export interface GallerySourceSnapshot {
+  readonly kind: GallerySourceKind
+  readonly value: string
+}
 
 export class GallerySourceEntry {
   public static Create(source: GallerySource): GallerySourceEntry {
     return new GallerySourceEntry(SourceIdentifier.Next(), source)
+  }
+
+  public static FromSnapshot(snapshot: GallerySourceSnapshot): GallerySourceEntry | undefined {
+    try {
+      const source = GallerySourceFactory.Create(snapshot.kind, snapshot.value)
+      return GallerySourceEntry.Create(source)
+    } catch {
+      return undefined
+    }
   }
 
   private constructor(
@@ -15,6 +29,23 @@ export class GallerySourceEntry {
 
   public Describe(): string {
     return this.source.Describe()
+  }
+
+  public ToSnapshot(): GallerySourceSnapshot {
+    switch (this.source.type) {
+      case 'reddit':
+        return {
+          kind: 'reddit',
+          value: this.source.subreddit
+        }
+      case 'unsplash':
+        return {
+          kind: 'unsplash',
+          value: this.source.tag
+        }
+      default:
+        throw new Error('Unhandled source kind for snapshot')
+    }
   }
 }
 

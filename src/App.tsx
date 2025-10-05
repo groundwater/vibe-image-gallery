@@ -5,6 +5,7 @@ import { GallerySourceEntry } from './lib/GallerySourceEntry.mts'
 import { GalleryImage } from './lib/GalleryImage.mts'
 import { CHECK } from './lib/Assertions.mts'
 import { GET_RANDOM_ITEM } from './lib/Random.mts'
+import { SourcePersistence } from './lib/SourcePersistence.mts'
 import SourceForm from './components/SourceForm'
 import SourceList from './components/SourceList'
 import GalleryControls from './components/GalleryControls'
@@ -34,6 +35,17 @@ const initialState: GalleryState = {
   isPlaying: false,
   paceMs: 5000,
   errorMessage: undefined
+}
+
+function initializeGalleryState(): GalleryState {
+  const storedEntries = SourcePersistence.Load()
+  if (storedEntries.length === 0) {
+    return initialState
+  }
+  return {
+    ...initialState,
+    entries: storedEntries
+  }
 }
 
 function galleryReducer(state: GalleryState, action: GalleryAction): GalleryState {
@@ -96,7 +108,7 @@ function galleryReducer(state: GalleryState, action: GalleryAction): GalleryStat
 }
 
 export default function App(): JSX.Element {
-  const [state, dispatch] = useReducer(galleryReducer, initialState)
+  const [state, dispatch] = useReducer(galleryReducer, initialState, initializeGalleryState)
   const galleryRef = useRef<HTMLDivElement | null>(null)
   const [isFullscreen, setIsFullscreen] = useState(false)
 
@@ -128,6 +140,10 @@ export default function App(): JSX.Element {
       loop.Stop()
     }
   }, [state.isPlaying, state.entries, state.paceMs])
+
+  useEffect(() => {
+    SourcePersistence.Save(state.entries)
+  }, [state.entries])
 
   const handleAddSource = (kind: GallerySourceKind, value: string) => {
     try {
@@ -195,6 +211,8 @@ export default function App(): JSX.Element {
             image={state.currentImage}
             infoText={infoText}
             isFullscreen={isFullscreen}
+            isPlaying={state.isPlaying}
+            onTogglePlayback={handleTogglePlayback}
           />
           {!isFullscreen && (
             <GalleryControls

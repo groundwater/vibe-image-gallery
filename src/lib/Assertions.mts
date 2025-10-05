@@ -15,3 +15,7 @@ export function IS_RECORD(value: unknown): value is Record<string, unknown> {
 export function IS_ARRAY(value: unknown): value is readonly unknown[] {
   return Array.isArray(value)
 }
+
+export function IS_STRING(value: unknown): value is string {
+  return typeof value === 'string'
+}

@@ -176,7 +176,6 @@
 }
 
 .gallery-controls__main button {
-  flex: 1;
   padding: 0.75rem;
   font-weight: 600;
   border: none;
@@ -184,6 +183,23 @@
   cursor: pointer;
   background: rgba(63, 156, 255, 0.9);
   color: #0b1019;
+}
+
+.gallery-controls__toggle {
+  flex: 1;
+}
+
+.gallery-controls__fullscreen {
+  flex: 0;
+  width: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gallery-controls__fullscreen svg {
+  width: 20px;
+  height: 20px;
 }
 
 .gallery-controls__slider {
@@ -209,6 +225,7 @@
 .gallery-viewport--fullscreen {
   border-radius: 0;
   background: #000;
+  cursor: pointer;
 }
 
 .app--fullscreen {
@@ -231,4 +248,20 @@
 
 .app--fullscreen .gallery-viewport__placeholder {
   font-size: 1.4rem;
+}
+
+.gallery-viewport__overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.2);
+  pointer-events: none;
+}
+
+.gallery-viewport__overlay-icon {
+  width: 96px;
+  height: 96px;
+  color: rgba(255, 255, 255, 0.85);
 }
