@@ -2,6 +2,7 @@
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  height: 100vh;
   background: linear-gradient(135deg, #101820, #1f1b2c);
   color: #f0f4f8;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -23,6 +24,7 @@
   gap: 2rem;
   padding: 2rem;
   box-sizing: border-box;
+  min-height: 0;
 }
 
 .app__sources {
@@ -37,6 +39,7 @@
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  min-height: 0;
 }
 
 .source-form h2 {
@@ -135,6 +138,7 @@
   flex-direction: column;
   overflow: hidden;
   position: relative;
+  min-height: 0;
 }
 
 .gallery-viewport__stage {
@@ -145,6 +149,7 @@
   justify-content: center;
   background: #000;
   overflow: hidden;
+  min-height: 0;
 }
 
 .gallery-viewport__stage--fullscreen {
