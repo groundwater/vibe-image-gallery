@@ -61,4 +61,5 @@ If you are told to "release":
 - 2025-10-04: Pace slider now uses exponential stops to 30m; playback controls live on the viewport overlay (center play, corner pause/fullscreen).
 - 2025-10-04: Gallery viewport sizing is tied to the window via flex `min-height: 0` adjustments; image fits stay constrained to the available stage.
 - 2025-10-05: Reddit presets live in `SourcePresetCatalog.mts`; `handleAddPreset` skips duplicates and surfaces a message if everything already exists.
+- 2025-10-05: Source list now scrolls with a Clear-all button; preset form stays static to avoid nested scrolling.
 </AGENT>

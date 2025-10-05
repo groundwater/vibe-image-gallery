@@ -17,6 +17,7 @@ type OptionalImage = GalleryImage | undefined
 type GalleryAction =
   | { type: 'add-source'; entry: GallerySourceEntry }
   | { type: 'remove-source'; id: string }
+  | { type: 'clear-sources' }
   | { type: 'set-playing'; value: boolean }
   | { type: 'set-pace'; paceMs: number }
   | { type: 'set-image'; image: GalleryImage }
@@ -73,6 +74,18 @@ function galleryReducer(state: GalleryState, action: GalleryAction): GalleryStat
         ...state,
         entries: remaining,
         isPlaying: shouldStop ? false : state.isPlaying
+      }
+    }
+    case 'clear-sources': {
+      if (state.entries.length === 0) {
+        return state
+      }
+      return {
+        ...state,
+        entries: [],
+        currentImage: undefined,
+        isPlaying: false,
+        errorMessage: undefined
       }
     }
     case 'set-playing': {
@@ -186,6 +199,10 @@ export default function App(): JSX.Element {
     dispatch({ type: 'remove-source', id })
   }
 
+  const handleClearSources = () => {
+    dispatch({ type: 'clear-sources' })
+  }
+
   const handleTogglePlayback = () => {
     dispatch({ type: 'set-playing', value: !state.isPlaying })
   }
@@ -229,7 +246,7 @@ export default function App(): JSX.Element {
         {!isFullscreen && (
           <section className="app__sources">
             <SourceForm onAdd={handleAddSource} onAddPreset={handleAddPreset} isDisabled={state.isPlaying} />
-            <SourceList entries={state.entries} onRemove={handleRemoveSource} />
+            <SourceList entries={state.entries} onRemove={handleRemoveSource} onClear={handleClearSources} />
           </section>
         )}
         <section className="app__viewer">
