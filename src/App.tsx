@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useReducer, useRef } from 'react'
+import { useEffect, useMemo, useReducer, useRef, useState } from 'react'
 import './App.css'
 import { GallerySourceFactory, GallerySourceKind } from './lib/GallerySourceFactory.mts'
 import { GallerySourceEntry } from './lib/GallerySourceEntry.mts'
@@ -98,8 +98,21 @@ function galleryReducer(state: GalleryState, action: GalleryAction): GalleryStat
 export default function App(): JSX.Element {
   const [state, dispatch] = useReducer(galleryReducer, initialState)
   const galleryRef = useRef<HTMLDivElement | null>(null)
+  const [isFullscreen, setIsFullscreen] = useState(false)
 
   const canPlay = state.entries.length > 0
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      const host = galleryRef.current
+      setIsFullscreen(host !== null && document.fullscreenElement === host)
+    }
+    document.addEventListener('fullscreenchange', handleFullscreenChange)
+    handleFullscreenChange()
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange)
+    }
+  }, [])
 
   useEffect(() => {
     if (!state.isPlaying || state.entries.length === 0) {
@@ -161,26 +174,38 @@ export default function App(): JSX.Element {
     return state.currentImage.label
   }, [state.errorMessage, state.currentImage])
 
+  const appClassName = isFullscreen ? 'app app--fullscreen' : 'app'
+
   return (
-    <div className="app" ref={galleryRef}>
-      <header className="app__header">
-        <h1>Vibe Image Gallery</h1>
-      </header>
+    <div className={appClassName} ref={galleryRef}>
+      {!isFullscreen && (
+        <header className="app__header">
+          <h1>Vibe Image Gallery</h1>
+        </header>
+      )}
       <main className="app__main">
-        <section className="app__sources">
-          <SourceForm onAdd={handleAddSource} isDisabled={state.isPlaying} />
-          <SourceList entries={state.entries} onRemove={handleRemoveSource} />
-        </section>
+        {!isFullscreen && (
+          <section className="app__sources">
+            <SourceForm onAdd={handleAddSource} isDisabled={state.isPlaying} />
+            <SourceList entries={state.entries} onRemove={handleRemoveSource} />
+          </section>
+        )}
         <section className="app__viewer">
-          <GalleryViewport image={state.currentImage} infoText={infoText} />
-          <GalleryControls
-            isPlaying={state.isPlaying}
-            canPlay={canPlay}
-            paceMs={state.paceMs}
-            onTogglePlayback={handleTogglePlayback}
-            onPaceChange={handlePaceChange}
-            onFullscreen={handleRequestFullscreen}
+          <GalleryViewport
+            image={state.currentImage}
+            infoText={infoText}
+            isFullscreen={isFullscreen}
           />
+          {!isFullscreen && (
+            <GalleryControls
+              isPlaying={state.isPlaying}
+              canPlay={canPlay}
+              paceMs={state.paceMs}
+              onTogglePlayback={handleTogglePlayback}
+              onPaceChange={handlePaceChange}
+              onFullscreen={handleRequestFullscreen}
+            />
+          )}
         </section>
       </main>
     </div>
