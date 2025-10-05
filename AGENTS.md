@@ -57,5 +57,5 @@ If you are told to "release":
 </READONLY>
 
 <AGENT>
-- 2025-10-04: App scaffolded with Vite/React/TS. `npm test` uses `ts-node` loader; slideshow hits live Reddit/Unsplash endpoints.
+- 2025-10-04: App scaffolded with Vite/React/TS. `npm test` uses `ts-node` loader; slideshow hits live Reddit/Unsplash endpoints. Fullscreen hides UI controls.
 </AGENT>
