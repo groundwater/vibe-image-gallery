@@ -10,6 +10,7 @@ import SourceForm from './components/SourceForm'
 import SourceList from './components/SourceList'
 import GalleryControls from './components/GalleryControls'
 import GalleryViewport from './components/GalleryViewport'
+import { SourcePresetEntry } from './lib/SourcePresetCatalog.mts'
 
 type OptionalImage = GalleryImage | undefined
 
@@ -156,6 +157,31 @@ export default function App(): JSX.Element {
     }
   }
 
+  const handleAddPreset = (entries: readonly SourcePresetEntry[]) => {
+    const existing = new Set(state.entries.map((entry) => entry.Describe()))
+    let added = false
+    for (const preset of entries) {
+      try {
+        const source = GallerySourceFactory.Create(preset.kind, preset.value)
+        const entry = GallerySourceEntry.Create(source)
+        const descriptor = entry.Describe()
+        if (existing.has(descriptor)) {
+          continue
+        }
+        existing.add(descriptor)
+        dispatch({ type: 'add-source', entry })
+        added = true
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'Unknown error'
+        dispatch({ type: 'set-error', message })
+        return
+      }
+    }
+    if (!added) {
+      dispatch({ type: 'set-error', message: 'All preset sources already added.' })
+    }
+  }
+
   const handleRemoveSource = (id: string) => {
     dispatch({ type: 'remove-source', id })
   }
@@ -202,7 +228,7 @@ export default function App(): JSX.Element {
       <main className="app__main">
         {!isFullscreen && (
           <section className="app__sources">
-            <SourceForm onAdd={handleAddSource} isDisabled={state.isPlaying} />
+            <SourceForm onAdd={handleAddSource} onAddPreset={handleAddPreset} isDisabled={state.isPlaying} />
             <SourceList entries={state.entries} onRemove={handleRemoveSource} />
           </section>
         )}

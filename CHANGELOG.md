@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+- Add subreddit preset buttons for rapid source configuration, covering nature, synthetic, organic, aesthetic, and scholastic themes. (#3)
 - Resize the gallery viewport with the window and ensure images scale to the available space. (#4)
 
 ## [0.1.0] - 2025-10-04

@@ -65,6 +65,42 @@
   border-radius: 8px;
 }
 
+.source-form__item--presets {
+  gap: 0.75rem;
+}
+
+.source-form__preset-heading {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.source-form__preset-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.source-form__preset-button {
+  padding: 0.4rem 0.8rem;
+  border: none;
+  border-radius: 999px;
+  background: rgba(63, 156, 255, 0.2);
+  color: #f0f4f8;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  font-weight: 600;
+}
+
+.source-form__preset-button:hover {
+  background: rgba(63, 156, 255, 0.35);
+}
+
+.source-form__preset-button:disabled {
+  background: rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.5);
+  cursor: not-allowed;
+}
+
 .source-form__controls {
   display: flex;
   gap: 0.5rem;
