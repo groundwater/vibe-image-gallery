@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useReducer, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react'
 import './App.css'
 import { GallerySourceFactory, GallerySourceKind } from './lib/GallerySourceFactory.mts'
 import { GallerySourceEntry } from './lib/GallerySourceEntry.mts'
@@ -6,6 +6,7 @@ import { GalleryImage } from './lib/GalleryImage.mts'
 import { CHECK } from './lib/Assertions.mts'
 import { GET_RANDOM_ITEM } from './lib/Random.mts'
 import { SourcePersistence } from './lib/SourcePersistence.mts'
+import { PacePersistence } from './lib/PacePersistence.mts'
 import SourceForm from './components/SourceForm'
 import SourceList from './components/SourceList'
 import GalleryControls from './components/GalleryControls'
@@ -41,12 +42,17 @@ const initialState: GalleryState = {
 
 function initializeGalleryState(): GalleryState {
   const storedEntries = SourcePersistence.Load()
+  const storedPace = PacePersistence.Load(initialState.paceMs)
   if (storedEntries.length === 0) {
-    return initialState
+    return {
+      ...initialState,
+      paceMs: storedPace
+    }
   }
   return {
     ...initialState,
-    entries: storedEntries
+    entries: storedEntries,
+    paceMs: storedPace
   }
 }
 
@@ -125,6 +131,8 @@ export default function App(): JSX.Element {
   const [state, dispatch] = useReducer(galleryReducer, initialState, initializeGalleryState)
   const galleryRef = useRef<HTMLDivElement | null>(null)
   const [isFullscreen, setIsFullscreen] = useState(false)
+  const [isChromeVisible, setIsChromeVisible] = useState(true)
+  const chromeHideTimerRef = useRef<number | undefined>(undefined)
 
   const canPlay = state.entries.length > 0
 
@@ -158,6 +166,49 @@ export default function App(): JSX.Element {
   useEffect(() => {
     SourcePersistence.Save(state.entries)
   }, [state.entries])
+
+  useEffect(() => {
+    PacePersistence.Save(state.paceMs)
+  }, [state.paceMs])
+
+  useEffect(() => {
+    if (!isFullscreen) {
+      setIsChromeVisible(true)
+      if (chromeHideTimerRef.current !== undefined) {
+        window.clearTimeout(chromeHideTimerRef.current)
+        chromeHideTimerRef.current = undefined
+      }
+      return
+    }
+
+    const scheduleHide = () => {
+      if (chromeHideTimerRef.current !== undefined) {
+        window.clearTimeout(chromeHideTimerRef.current)
+      }
+      chromeHideTimerRef.current = window.setTimeout(() => {
+        setIsChromeVisible(false)
+      }, 3000)
+    }
+
+    const handlePointerActivity = () => {
+      setIsChromeVisible(true)
+      scheduleHide()
+    }
+
+    setIsChromeVisible(true)
+    scheduleHide()
+    document.addEventListener('pointermove', handlePointerActivity)
+    document.addEventListener('pointerdown', handlePointerActivity)
+
+    return () => {
+      document.removeEventListener('pointermove', handlePointerActivity)
+      document.removeEventListener('pointerdown', handlePointerActivity)
+      if (chromeHideTimerRef.current !== undefined) {
+        window.clearTimeout(chromeHideTimerRef.current)
+        chromeHideTimerRef.current = undefined
+      }
+    }
+  }, [isFullscreen])
 
   const handleAddSource = (kind: GallerySourceKind, value: string) => {
     try {
@@ -211,7 +262,7 @@ export default function App(): JSX.Element {
     dispatch({ type: 'set-pace', paceMs })
   }
 
-  const handleRequestFullscreen = async () => {
+  const handleRequestFullscreen = useCallback(async () => {
     const host = galleryRef.current
     if (!host) {
       return
@@ -221,7 +272,29 @@ export default function App(): JSX.Element {
       return
     }
     await host.requestFullscreen()
-  }
+  }, [])
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== 'f' && event.key !== 'F') {
+        return
+      }
+      const target = event.target
+      if (target instanceof HTMLElement) {
+        const tagName = target.tagName
+        if (tagName === 'INPUT' || tagName === 'TEXTAREA' || tagName === 'SELECT' || target.isContentEditable) {
+          return
+        }
+      }
+      event.preventDefault()
+      void handleRequestFullscreen()
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [handleRequestFullscreen])
 
   const infoText = useMemo(() => {
     if (state.errorMessage) {
@@ -234,6 +307,8 @@ export default function App(): JSX.Element {
   }, [state.errorMessage, state.currentImage])
 
   const appClassName = isFullscreen ? 'app app--fullscreen' : 'app'
+
+  const showChrome = !isFullscreen || isChromeVisible
 
   return (
     <div className={appClassName} ref={galleryRef}>
@@ -255,6 +330,7 @@ export default function App(): JSX.Element {
             infoText={infoText}
             isFullscreen={isFullscreen}
             isPlaying={state.isPlaying}
+            showChrome={showChrome}
             onTogglePlayback={handleTogglePlayback}
             onToggleFullscreen={handleRequestFullscreen}
           />

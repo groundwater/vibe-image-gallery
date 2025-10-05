@@ -311,6 +311,18 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
+  opacity: 1;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.gallery-viewport__chrome--hidden {
+  opacity: 0;
+}
+
+.gallery-viewport__chrome--hidden .gallery-viewport__play-button,
+.gallery-viewport__chrome--hidden .gallery-viewport__pause-button,
+.gallery-viewport__chrome--hidden .gallery-viewport__fullscreen-button {
+  pointer-events: none;
 }
 
 .gallery-viewport__play-button,

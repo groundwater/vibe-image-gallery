@@ -2,9 +2,10 @@
 
 ## [Unreleased]
 
- - Add subreddit preset buttons for rapid source configuration, covering nature, city, synthetic, organic, aesthetic, and scholastic themes. (#3)
+- Add subreddit preset buttons for rapid source configuration, covering nature, city, synthetic, organic, aesthetic, and scholastic themes. (#3)
 - Keep the preset form fixed, scroll added sources independently, and provide a Clear button to remove every source at once.
 - Resize the gallery viewport with the window and ensure images scale to the available space. (#4)
+- Persist slideshow pace, hide fullscreen chrome after idle with an 'f' shortcut, and require `unsplash=on` to reveal Unsplash inputs. (#7)
 
 ## [0.1.0] - 2025-10-04
 

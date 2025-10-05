@@ -1,6 +1,7 @@
 import { FormEvent, useState, ChangeEvent } from 'react'
 import { GallerySourceKind } from '../lib/GallerySourceFactory.mts'
 import { SourcePresetCatalog, SourcePresetEntry } from '../lib/SourcePresetCatalog.mts'
+import { PageOptions } from '../lib/PageOptions.mts'
 
 interface SourceFormProps {
   readonly onAdd: (kind: GallerySourceKind, value: string) => void
@@ -13,6 +14,7 @@ const presetGroups = SourcePresetCatalog.All()
 export default function SourceForm({ onAdd, onAddPreset, isDisabled }: SourceFormProps): JSX.Element {
   const [redditValue, setRedditValue] = useState('')
   const [unsplashValue, setUnsplashValue] = useState('')
+  const isUnsplashEnabled = PageOptions.ShouldShowUnsplash()
 
   const handleRedditSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -84,22 +86,24 @@ export default function SourceForm({ onAdd, onAddPreset, isDisabled }: SourceFor
             </button>
           </div>
         </form>
-        <form className="source-form__item" onSubmit={handleUnsplashSubmit}>
-          <label htmlFor="unsplash-input">Unsplash Tag</label>
-          <div className="source-form__controls">
-            <input
-              id="unsplash-input"
-              type="text"
-              value={unsplashValue}
-              onChange={handleUnsplashChange}
-              placeholder="e.g. nature"
-              disabled={isDisabled}
-            />
-            <button type="submit" disabled={isDisabled}>
-              Add
-            </button>
-          </div>
-        </form>
+        {isUnsplashEnabled && (
+          <form className="source-form__item" onSubmit={handleUnsplashSubmit}>
+            <label htmlFor="unsplash-input">Unsplash Tag</label>
+            <div className="source-form__controls">
+              <input
+                id="unsplash-input"
+                type="text"
+                value={unsplashValue}
+                onChange={handleUnsplashChange}
+                placeholder="e.g. nature"
+                disabled={isDisabled}
+              />
+              <button type="submit" disabled={isDisabled}>
+                Add
+              </button>
+            </div>
+          </form>
+        )}
       </div>
     </div>
   )
