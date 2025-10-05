@@ -27,6 +27,18 @@ const expectedGroups = [
     ]
   },
   {
+    label: 'City',
+    values: [
+      'CityPorn',
+      'ArchitecturePorn',
+      'SkylinePorn',
+      'Skyscrapers',
+      'UrbanPorn',
+      'UrbanExploration',
+      'AbandonedPorn'
+    ]
+  },
+  {
     label: 'Synthetic',
     values: [
       'CityPorn',

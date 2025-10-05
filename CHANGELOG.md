@@ -2,7 +2,7 @@
 
 ## [Unreleased]
 
-- Add subreddit preset buttons for rapid source configuration, covering nature, synthetic, organic, aesthetic, and scholastic themes. (#3)
+ - Add subreddit preset buttons for rapid source configuration, covering nature, city, synthetic, organic, aesthetic, and scholastic themes. (#3)
 - Keep the preset form fixed, scroll added sources independently, and provide a Clear button to remove every source at once.
 - Resize the gallery viewport with the window and ensure images scale to the available space. (#4)
 

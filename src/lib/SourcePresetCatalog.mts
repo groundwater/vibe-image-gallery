@@ -33,6 +33,15 @@ export class SourcePresetCatalog {
         'LavaPorn',
         'LakePorn'
       ]),
+      this.BuildRedditGroup('City', [
+        'CityPorn',
+        'ArchitecturePorn',
+        'SkylinePorn',
+        'Skyscrapers',
+        'UrbanPorn',
+        'UrbanExploration',
+        'AbandonedPorn'
+      ]),
       this.BuildRedditGroup('Synthetic', [
         'CityPorn',
         'VillagePorn',
