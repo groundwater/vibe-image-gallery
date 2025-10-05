@@ -1,4 +1,8 @@
-# vibe-image-gallery
+# Vibe Image Gallery
+
+![100% Vibe Coded](https://badges.ws/badge/100%25-Vibe%20Coded-ff0000)
+
+> This is vibe coded by gpt-5-codex
 
 Vibe Image Gallery is a Vite + React TypeScript single-page app for building a rotating slideshow sourced from Reddit subreddits and Unsplash tags.
 
