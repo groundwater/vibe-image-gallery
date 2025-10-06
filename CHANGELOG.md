@@ -10,6 +10,7 @@
 - Enable keyboard navigation so the space bar toggles playback while the left and right arrows step the slideshow and reset its timer. (#12)
 - Add an on-stage info overlay that flashes with `i` and stays pinned via `shift+i`, keeping errors and metadata accessible. (#14)
 - Convert the Reddit source into a plugin, add Flickr, Wikimedia Commons, and Met Museum image feeds with presets, and gate non-Reddit sources behind page toggles. (#15)
+- Capture a Playwright-powered UI screenshot via `npm run screenshot` and embed it in the README.
 
 ## [0.1.0] - 2025-10-04
 

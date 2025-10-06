@@ -69,4 +69,5 @@ If you are told to "release":
 - 2025-10-07: Image sources now live under `src/lib/plugins` with Reddit converted to a plugin alongside new Flickr, Wikimedia Commons, and Met Museum entries and presets.
 - 2025-10-07: Non-Reddit sources require query params `unsplash`, `flickr`, `wikimedia`, or `met` set to `on` to expose inputs and presets.
 - 2025-10-07: GitHub Pages workflow builds on main, uploads the artifact, and deploys via GitHub Pages actions; Vite base uses './' for relative assets.
+- 2025-10-07: `npm run screenshot` spawns the dev server and uses Playwright to refresh `docs/gallery-screenshot.png`.
 </AGENT>
