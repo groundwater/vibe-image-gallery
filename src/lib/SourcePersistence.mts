@@ -54,7 +54,13 @@ export class SourcePersistence {
     if (!IS_STRING(kindValue) || !IS_STRING(valueValue)) {
       return undefined
     }
-    if (kindValue !== 'reddit' && kindValue !== 'unsplash') {
+    if (
+      kindValue !== 'reddit' &&
+      kindValue !== 'unsplash' &&
+      kindValue !== 'flickr' &&
+      kindValue !== 'wikimedia-commons' &&
+      kindValue !== 'met-museum'
+    ) {
       return undefined
     }
     return {

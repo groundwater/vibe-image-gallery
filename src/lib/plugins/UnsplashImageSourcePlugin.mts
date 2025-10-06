@@ -1,12 +1,12 @@
-import { GalleryImage } from './GalleryImage.mts'
-import { CHECK, IS_NON_EMPTY } from './Assertions.mts'
+import { GalleryImage } from '../GalleryImage.mts'
+import { CHECK, IS_NON_EMPTY } from '../Assertions.mts'
 
-export class UnsplashImageSource {
+export class UnsplashImageSourcePlugin {
   public readonly type: 'unsplash' = 'unsplash'
 
-  public static Create(tag: string): UnsplashImageSource {
+  public static Create(tag: string): UnsplashImageSourcePlugin {
     CHECK(IS_NON_EMPTY(tag), 'Unsplash tag is required')
-    return new UnsplashImageSource(tag.trim())
+    return new UnsplashImageSourcePlugin(tag.trim())
   }
 
   private constructor(public readonly tag: string) {}
