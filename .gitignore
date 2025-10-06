@@ -5,3 +5,5 @@ dist
 .vscode
 npm-debug.log*
 coverage
+
+.vite

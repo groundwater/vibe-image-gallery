@@ -43,6 +43,21 @@ export class GallerySourceEntry {
           kind: 'unsplash',
           value: this.source.tag
         }
+      case 'flickr':
+        return {
+          kind: 'flickr',
+          value: this.source.tags
+        }
+      case 'wikimedia-commons':
+        return {
+          kind: 'wikimedia-commons',
+          value: this.source.search
+        }
+      case 'met-museum':
+        return {
+          kind: 'met-museum',
+          value: this.source.search
+        }
       default:
         throw new Error('Unhandled source kind for snapshot')
     }

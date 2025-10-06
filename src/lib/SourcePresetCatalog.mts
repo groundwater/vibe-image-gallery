@@ -1,4 +1,5 @@
 import { GallerySourceKind } from './GallerySourceFactory.mts'
+import { PageOptions } from './PageOptions.mts'
 
 export interface SourcePresetEntry {
   readonly kind: GallerySourceKind
@@ -12,7 +13,7 @@ export interface SourcePresetGroup {
 
 export class SourcePresetCatalog {
   public static All(): readonly SourcePresetGroup[] {
-    return [
+    const groups: SourcePresetGroup[] = [
       this.BuildRedditGroup('Nature', [
         'EarthPorn',
         'BotanicalPorn',
@@ -131,20 +132,55 @@ export class SourcePresetCatalog {
         'ArtefactPorn'
       ])
     ]
+    if (PageOptions.ShouldShowFlickr()) {
+      groups.push(
+        this.BuildGroup('Flickr', 'flickr', [
+          'landscape',
+          'architecture',
+          'street photography',
+          'wildlife'
+        ])
+      )
+    }
+    if (PageOptions.ShouldShowWikimedia()) {
+      groups.push(
+        this.BuildGroup('Wikimedia Commons', 'wikimedia-commons', [
+          'aurora borealis',
+          'astronomy',
+          'wildlife',
+          'architecture'
+        ])
+      )
+    }
+    if (PageOptions.ShouldShowMetMuseum()) {
+      groups.push(
+        this.BuildGroup('The Met Museum', 'met-museum', [
+          'sunflower',
+          'impressionism',
+          'armor',
+          'portrait'
+        ])
+      )
+    }
+    return groups
   }
 
   private static BuildRedditGroup(label: string, subreddits: readonly string[]): SourcePresetGroup {
+    return this.BuildGroup(label, 'reddit', subreddits)
+  }
+
+  private static BuildGroup(label: string, kind: GallerySourceKind, values: readonly string[]): SourcePresetGroup {
     const unique = new Map<string, SourcePresetEntry>()
-    for (const subreddit of subreddits) {
-      const trimmed = subreddit.trim()
+    for (const value of values) {
+      const trimmed = value.trim()
       if (trimmed.length === 0) {
         continue
       }
-      const key = trimmed.toLowerCase()
+      const key = `${kind}:${trimmed.toLowerCase()}`
       if (unique.has(key)) {
         continue
       }
-      unique.set(key, this.CreateEntry('reddit', trimmed))
+      unique.set(key, this.CreateEntry(kind, trimmed))
     }
     return {
       label,

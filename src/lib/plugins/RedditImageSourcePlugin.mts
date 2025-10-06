@@ -1,18 +1,18 @@
-import { GalleryImage } from './GalleryImage.mts'
-import { CHECK, IS_ARRAY, IS_NON_EMPTY, IS_RECORD } from './Assertions.mts'
-import { GET_RANDOM_ITEM } from './Random.mts'
+import { GalleryImage } from '../GalleryImage.mts'
+import { CHECK, IS_ARRAY, IS_NON_EMPTY, IS_RECORD } from '../Assertions.mts'
+import { GET_RANDOM_ITEM } from '../Random.mts'
 
 interface RedditPost {
   readonly title: string
   readonly url: string
 }
 
-export class RedditImageSource {
+export class RedditImageSourcePlugin {
   public readonly type: 'reddit' = 'reddit'
 
-  public static Create(subreddit: string): RedditImageSource {
+  public static Create(subreddit: string): RedditImageSourcePlugin {
     CHECK(IS_NON_EMPTY(subreddit), 'Subreddit is required')
-    return new RedditImageSource(subreddit.trim())
+    return new RedditImageSourcePlugin(subreddit.trim())
   }
 
   private constructor(public readonly subreddit: string) {}

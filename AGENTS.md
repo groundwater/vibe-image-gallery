@@ -65,4 +65,7 @@ If you are told to "release":
 - 2025-10-05: Fullscreen chrome auto-hides after idle, `f` toggles fullscreen, pace persists via `PacePersistence`, and Unsplash inputs require `?unsplash=on`.
 - 2025-10-05: Arrow keys walk slideshow history (with timer resets) and space toggles playback; `GalleryImagePicker` centralizes random fetches.
 - 2025-10-06: `i` flashes per-image metadata overlay; `shift+i` pins it. Info chrome lives on the stage alongside fullscreen/play controls.
+- 2025-10-06: GitHub repo config now enforces PRs with linear history on `main`, auto-deletes branches, and includes only the label taxonomy from `agents/setup.md`.
+- 2025-10-07: Image sources now live under `src/lib/plugins` with Reddit converted to a plugin alongside new Flickr, Wikimedia Commons, and Met Museum entries and presets.
+- 2025-10-07: Non-Reddit sources require query params `unsplash`, `flickr`, `wikimedia`, or `met` set to `on` to expose inputs and presets.
 </AGENT>

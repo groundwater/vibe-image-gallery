@@ -14,32 +14,25 @@ const presetGroups = SourcePresetCatalog.All()
 export default function SourceForm({ onAdd, onAddPreset, isDisabled }: SourceFormProps): JSX.Element {
   const [redditValue, setRedditValue] = useState('')
   const [unsplashValue, setUnsplashValue] = useState('')
+  const [flickrValue, setFlickrValue] = useState('')
+  const [wikimediaValue, setWikimediaValue] = useState('')
+  const [metValue, setMetValue] = useState('')
   const isUnsplashEnabled = PageOptions.ShouldShowUnsplash()
+  const isFlickrEnabled = PageOptions.ShouldShowFlickr()
+  const isWikimediaEnabled = PageOptions.ShouldShowWikimedia()
+  const isMetEnabled = PageOptions.ShouldShowMetMuseum()
 
-  const handleRedditSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: FormEvent<HTMLFormElement>, kind: GallerySourceKind, value: string, clear: (next: string) => void) => {
     event.preventDefault()
     if (isDisabled) {
       return
     }
-    onAdd('reddit', redditValue)
-    setRedditValue('')
+    onAdd(kind, value)
+    clear('')
   }
 
-  const handleUnsplashSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    if (isDisabled) {
-      return
-    }
-    onAdd('unsplash', unsplashValue)
-    setUnsplashValue('')
-  }
-
-  const handleRedditChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setRedditValue(event.target.value)
-  }
-
-  const handleUnsplashChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setUnsplashValue(event.target.value)
+  const handleInputChange = (event: ChangeEvent<HTMLInputElement>, setter: (value: string) => void) => {
+    setter(event.target.value)
   }
 
   const handlePresetAdd = (entries: readonly SourcePresetEntry[]) => {
@@ -70,14 +63,17 @@ export default function SourceForm({ onAdd, onAddPreset, isDisabled }: SourceFor
             ))}
           </div>
         </div>
-        <form className="source-form__item" onSubmit={handleRedditSubmit}>
+        <form
+          className="source-form__item"
+          onSubmit={(event) => handleSubmit(event, 'reddit', redditValue, setRedditValue)}
+        >
           <label htmlFor="reddit-input">Reddit Subreddit</label>
           <div className="source-form__controls">
             <input
               id="reddit-input"
               type="text"
               value={redditValue}
-              onChange={handleRedditChange}
+              onChange={(event) => handleInputChange(event, setRedditValue)}
               placeholder="e.g. EarthPorn"
               disabled={isDisabled}
             />
@@ -87,15 +83,81 @@ export default function SourceForm({ onAdd, onAddPreset, isDisabled }: SourceFor
           </div>
         </form>
         {isUnsplashEnabled && (
-          <form className="source-form__item" onSubmit={handleUnsplashSubmit}>
+          <form
+            className="source-form__item"
+            onSubmit={(event) => handleSubmit(event, 'unsplash', unsplashValue, setUnsplashValue)}
+          >
             <label htmlFor="unsplash-input">Unsplash Tag</label>
             <div className="source-form__controls">
               <input
                 id="unsplash-input"
                 type="text"
                 value={unsplashValue}
-                onChange={handleUnsplashChange}
+                onChange={(event) => handleInputChange(event, setUnsplashValue)}
                 placeholder="e.g. nature"
+                disabled={isDisabled}
+              />
+              <button type="submit" disabled={isDisabled}>
+                Add
+              </button>
+            </div>
+          </form>
+        )}
+        {isFlickrEnabled && (
+          <form
+            className="source-form__item"
+            onSubmit={(event) => handleSubmit(event, 'flickr', flickrValue, setFlickrValue)}
+          >
+            <label htmlFor="flickr-input">Flickr Tags</label>
+            <div className="source-form__controls">
+              <input
+                id="flickr-input"
+                type="text"
+                value={flickrValue}
+                onChange={(event) => handleInputChange(event, setFlickrValue)}
+                placeholder="e.g. landscape, sunrise"
+                disabled={isDisabled}
+              />
+              <button type="submit" disabled={isDisabled}>
+                Add
+              </button>
+            </div>
+          </form>
+        )}
+        {isWikimediaEnabled && (
+          <form
+            className="source-form__item"
+            onSubmit={(event) => handleSubmit(event, 'wikimedia-commons', wikimediaValue, setWikimediaValue)}
+          >
+            <label htmlFor="wikimedia-input">Wikimedia Commons Search</label>
+            <div className="source-form__controls">
+              <input
+                id="wikimedia-input"
+                type="text"
+                value={wikimediaValue}
+                onChange={(event) => handleInputChange(event, setWikimediaValue)}
+                placeholder="e.g. aurora borealis"
+                disabled={isDisabled}
+              />
+              <button type="submit" disabled={isDisabled}>
+                Add
+              </button>
+            </div>
+          </form>
+        )}
+        {isMetEnabled && (
+          <form
+            className="source-form__item"
+            onSubmit={(event) => handleSubmit(event, 'met-museum', metValue, setMetValue)}
+          >
+            <label htmlFor="met-input">The Met Museum Search</label>
+            <div className="source-form__controls">
+              <input
+                id="met-input"
+                type="text"
+                value={metValue}
+                onChange={(event) => handleInputChange(event, setMetValue)}
+                placeholder="e.g. sunflower"
                 disabled={isDisabled}
               />
               <button type="submit" disabled={isDisabled}>

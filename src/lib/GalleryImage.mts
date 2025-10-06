@@ -1,6 +1,11 @@
 import { CHECK, IS_NON_EMPTY } from './Assertions.mts'
 
-export type GallerySourceType = 'reddit' | 'unsplash'
+export type GallerySourceType =
+  | 'reddit'
+  | 'unsplash'
+  | 'flickr'
+  | 'wikimedia-commons'
+  | 'met-museum'
 
 export class GalleryImage {
   public static Create(args: {
