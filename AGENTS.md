@@ -64,4 +64,5 @@ If you are told to "release":
 - 2025-10-05: Source list now scrolls with a Clear-all button; preset form stays static to avoid nested scrolling, and a City preset highlights urban-focused subreddits.
 - 2025-10-05: Fullscreen chrome auto-hides after idle, `f` toggles fullscreen, pace persists via `PacePersistence`, and Unsplash inputs require `?unsplash=on`.
 - 2025-10-05: Arrow keys walk slideshow history (with timer resets) and space toggles playback; `GalleryImagePicker` centralizes random fetches.
+- 2025-10-06: `i` flashes per-image metadata overlay; `shift+i` pins it. Info chrome lives on the stage alongside fullscreen/play controls.
 </AGENT>

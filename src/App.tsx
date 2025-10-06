@@ -6,6 +6,7 @@ import { GalleryImage } from './lib/GalleryImage.mts'
 import { CHECK } from './lib/Assertions.mts'
 import { SourcePersistence } from './lib/SourcePersistence.mts'
 import { PacePersistence } from './lib/PacePersistence.mts'
+import { InfoFlashTimer } from './lib/InfoFlashTimer.mts'
 import SourceForm from './components/SourceForm'
 import SourceList from './components/SourceList'
 import GalleryControls from './components/GalleryControls'
@@ -45,6 +46,8 @@ const initialState: GalleryState = {
   history: [],
   future: []
 }
+
+const INFO_FLASH_DURATION_MS = 2500
 
 function initializeGalleryState(): GalleryState {
   const storedEntries = SourcePersistence.Load()
@@ -173,6 +176,9 @@ export default function App(): JSX.Element {
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [isChromeVisible, setIsChromeVisible] = useState(true)
   const chromeHideTimerRef = useRef<number | undefined>(undefined)
+  const [isInfoPinned, setIsInfoPinned] = useState(false)
+  const [isInfoVisible, setIsInfoVisible] = useState(false)
+  const infoFlashRef = useRef<InfoFlashTimer | undefined>(undefined)
 
   const canPlay = state.entries.length > 0
 
@@ -255,6 +261,35 @@ export default function App(): JSX.Element {
     }
   }, [isFullscreen])
 
+  useEffect(() => {
+    const timer = InfoFlashTimer.Create(() => {
+      setIsInfoVisible(false)
+    })
+    infoFlashRef.current = timer
+    return () => {
+      timer.Dispose()
+      if (infoFlashRef.current === timer) {
+        infoFlashRef.current = undefined
+      }
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!state.errorMessage) {
+      return
+    }
+    setIsInfoVisible(true)
+    const timer = infoFlashRef.current
+    if (!timer) {
+      return
+    }
+    timer.Cancel()
+    if (isInfoPinned) {
+      return
+    }
+    timer.Flash(INFO_FLASH_DURATION_MS)
+  }, [state.errorMessage, isInfoPinned])
+
   const handleAddSource = (kind: GallerySourceKind, value: string) => {
     try {
       const source = GallerySourceFactory.Create(kind, value)
@@ -302,6 +337,38 @@ export default function App(): JSX.Element {
   const handleTogglePlayback = useCallback(() => {
     dispatch({ type: 'set-playing', value: !state.isPlaying })
   }, [dispatch, state.isPlaying])
+
+  const handleFlashInfo = useCallback(() => {
+    setIsInfoVisible(true)
+    if (isInfoPinned) {
+      return
+    }
+    const timer = infoFlashRef.current
+    if (!timer) {
+      return
+    }
+    timer.Flash(INFO_FLASH_DURATION_MS)
+  }, [isInfoPinned])
+
+  const handleToggleInfoPinned = useCallback(() => {
+    setIsInfoPinned((current) => {
+      const next = !current
+      if (next) {
+        setIsInfoVisible(true)
+        const timer = infoFlashRef.current
+        if (timer) {
+          timer.Cancel()
+        }
+      } else {
+        setIsInfoVisible(false)
+        const timer = infoFlashRef.current
+        if (timer) {
+          timer.Cancel()
+        }
+      }
+      return next
+    })
+  }, [])
 
   const handlePaceChange = (paceMs: number) => {
     dispatch({ type: 'set-pace', paceMs })
@@ -393,6 +460,16 @@ export default function App(): JSX.Element {
       if (key === ' ' || key === 'Spacebar') {
         event.preventDefault()
         handleTogglePlayback()
+        return
+      }
+
+      if (key === 'i' || key === 'I') {
+        event.preventDefault()
+        if (event.shiftKey) {
+          handleToggleInfoPinned()
+          return
+        }
+        handleFlashInfo()
       }
     }
 
@@ -400,7 +477,7 @@ export default function App(): JSX.Element {
     return () => {
       document.removeEventListener('keydown', handleKeyDown)
     }
-  }, [handleRequestFullscreen, handleShowNext, handleShowPrevious, handleTogglePlayback])
+  }, [handleRequestFullscreen, handleShowNext, handleShowPrevious, handleTogglePlayback, handleFlashInfo, handleToggleInfoPinned])
 
   const infoText = useMemo(() => {
     if (state.errorMessage) {
@@ -415,6 +492,7 @@ export default function App(): JSX.Element {
   const appClassName = isFullscreen ? 'app app--fullscreen' : 'app'
 
   const showChrome = !isFullscreen || isChromeVisible
+  const showInfo = isInfoPinned || isInfoVisible
 
   return (
     <div className={appClassName} ref={galleryRef}>
@@ -437,6 +515,7 @@ export default function App(): JSX.Element {
             isFullscreen={isFullscreen}
             isPlaying={state.isPlaying}
             showChrome={showChrome}
+            showInfo={showInfo}
             onTogglePlayback={handleTogglePlayback}
             onToggleFullscreen={handleRequestFullscreen}
           />
