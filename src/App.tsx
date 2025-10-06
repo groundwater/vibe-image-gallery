@@ -4,7 +4,6 @@ import { GallerySourceFactory, GallerySourceKind } from './lib/GallerySourceFact
 import { GallerySourceEntry } from './lib/GallerySourceEntry.mts'
 import { GalleryImage } from './lib/GalleryImage.mts'
 import { CHECK } from './lib/Assertions.mts'
-import { GET_RANDOM_ITEM } from './lib/Random.mts'
 import { SourcePersistence } from './lib/SourcePersistence.mts'
 import { PacePersistence } from './lib/PacePersistence.mts'
 import SourceForm from './components/SourceForm'
@@ -12,6 +11,7 @@ import SourceList from './components/SourceList'
 import GalleryControls from './components/GalleryControls'
 import GalleryViewport from './components/GalleryViewport'
 import { SourcePresetEntry } from './lib/SourcePresetCatalog.mts'
+import { GalleryImagePicker } from './lib/GalleryImagePicker.mts'
 
 type OptionalImage = GalleryImage | undefined
 
@@ -23,6 +23,8 @@ type GalleryAction =
   | { type: 'set-pace'; paceMs: number }
   | { type: 'set-image'; image: GalleryImage }
   | { type: 'set-error'; message: string | undefined }
+  | { type: 'show-previous' }
+  | { type: 'show-future' }
 
 interface GalleryState {
   readonly entries: readonly GallerySourceEntry[]
@@ -30,6 +32,8 @@ interface GalleryState {
   readonly isPlaying: boolean
   readonly paceMs: number
   readonly errorMessage: string | undefined
+  readonly history: readonly GalleryImage[]
+  readonly future: readonly GalleryImage[]
 }
 
 const initialState: GalleryState = {
@@ -37,7 +41,9 @@ const initialState: GalleryState = {
   currentImage: undefined,
   isPlaying: false,
   paceMs: 5000,
-  errorMessage: undefined
+  errorMessage: undefined,
+  history: [],
+  future: []
 }
 
 function initializeGalleryState(): GalleryState {
@@ -91,7 +97,9 @@ function galleryReducer(state: GalleryState, action: GalleryAction): GalleryStat
         entries: [],
         currentImage: undefined,
         isPlaying: false,
-        errorMessage: undefined
+        errorMessage: undefined,
+        history: [],
+        future: []
       }
     }
     case 'set-playing': {
@@ -110,16 +118,47 @@ function galleryReducer(state: GalleryState, action: GalleryAction): GalleryStat
       }
     }
     case 'set-image': {
+      const nextHistory = state.currentImage ? [...state.history, state.currentImage] : state.history
       return {
         ...state,
         currentImage: action.image,
-        errorMessage: undefined
+        errorMessage: undefined,
+        history: nextHistory,
+        future: []
       }
     }
     case 'set-error': {
       return {
         ...state,
         errorMessage: action.message
+      }
+    }
+    case 'show-previous': {
+      if (state.history.length === 0) {
+        return state
+      }
+      const previousIndex = state.history.length - 1
+      const previousImage = state.history[previousIndex]
+      const nextHistory = state.history.slice(0, previousIndex)
+      const nextFuture = state.currentImage ? [state.currentImage, ...state.future] : state.future
+      return {
+        ...state,
+        currentImage: previousImage,
+        history: nextHistory,
+        future: nextFuture
+      }
+    }
+    case 'show-future': {
+      if (state.future.length === 0) {
+        return state
+      }
+      const [nextImage, ...remainingFuture] = state.future
+      const nextHistory = state.currentImage ? [...state.history, state.currentImage] : state.history
+      return {
+        ...state,
+        currentImage: nextImage,
+        history: nextHistory,
+        future: remainingFuture
       }
     }
     default:
@@ -130,6 +169,7 @@ function galleryReducer(state: GalleryState, action: GalleryAction): GalleryStat
 export default function App(): JSX.Element {
   const [state, dispatch] = useReducer(galleryReducer, initialState, initializeGalleryState)
   const galleryRef = useRef<HTMLDivElement | null>(null)
+  const playbackRef = useRef<PlaybackLoop | undefined>(undefined)
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [isChromeVisible, setIsChromeVisible] = useState(true)
   const chromeHideTimerRef = useRef<number | undefined>(undefined)
@@ -150,6 +190,7 @@ export default function App(): JSX.Element {
 
   useEffect(() => {
     if (!state.isPlaying || state.entries.length === 0) {
+      playbackRef.current = undefined
       return
     }
     const loop = new PlaybackLoop(
@@ -158,10 +199,14 @@ export default function App(): JSX.Element {
       (image) => dispatch({ type: 'set-image', image }),
       (message) => dispatch({ type: 'set-error', message })
     )
+    playbackRef.current = loop
     return () => {
       loop.Stop()
+      if (playbackRef.current === loop) {
+        playbackRef.current = undefined
+      }
     }
-  }, [state.isPlaying, state.entries, state.paceMs])
+  }, [state.isPlaying, state.entries, state.paceMs, dispatch])
 
   useEffect(() => {
     SourcePersistence.Save(state.entries)
@@ -254,13 +299,55 @@ export default function App(): JSX.Element {
     dispatch({ type: 'clear-sources' })
   }
 
-  const handleTogglePlayback = () => {
+  const handleTogglePlayback = useCallback(() => {
     dispatch({ type: 'set-playing', value: !state.isPlaying })
-  }
+  }, [dispatch, state.isPlaying])
 
   const handlePaceChange = (paceMs: number) => {
     dispatch({ type: 'set-pace', paceMs })
   }
+
+  const handleShowPrevious = useCallback(() => {
+    if (state.history.length === 0) {
+      return
+    }
+    dispatch({ type: 'show-previous' })
+    if (state.isPlaying) {
+      const loop = playbackRef.current
+      if (loop) {
+        loop.RestartCountdown()
+      }
+    }
+  }, [dispatch, state.history.length, state.isPlaying])
+
+  const handleShowNext = useCallback(async () => {
+    if (state.future.length > 0) {
+      dispatch({ type: 'show-future' })
+      if (state.isPlaying) {
+        const loop = playbackRef.current
+        if (loop) {
+          loop.RestartCountdown()
+        }
+      }
+      return
+    }
+    if (state.entries.length === 0) {
+      return
+    }
+    try {
+      const image = await GalleryImagePicker.FetchRandom(state.entries)
+      dispatch({ type: 'set-image', image })
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Unknown error'
+      dispatch({ type: 'set-error', message })
+    }
+    if (state.isPlaying) {
+      const loop = playbackRef.current
+      if (loop) {
+        loop.RestartCountdown()
+      }
+    }
+  }, [dispatch, state.future.length, state.entries, state.isPlaying])
 
   const handleRequestFullscreen = useCallback(async () => {
     const host = galleryRef.current
@@ -276,9 +363,7 @@ export default function App(): JSX.Element {
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key !== 'f' && event.key !== 'F') {
-        return
-      }
+      const key = event.key
       const target = event.target
       if (target instanceof HTMLElement) {
         const tagName = target.tagName
@@ -286,15 +371,36 @@ export default function App(): JSX.Element {
           return
         }
       }
-      event.preventDefault()
-      void handleRequestFullscreen()
+
+      if (key === 'f' || key === 'F') {
+        event.preventDefault()
+        void handleRequestFullscreen()
+        return
+      }
+
+      if (key === 'ArrowRight') {
+        event.preventDefault()
+        void handleShowNext()
+        return
+      }
+
+      if (key === 'ArrowLeft') {
+        event.preventDefault()
+        handleShowPrevious()
+        return
+      }
+
+      if (key === ' ' || key === 'Spacebar') {
+        event.preventDefault()
+        handleTogglePlayback()
+      }
     }
 
     document.addEventListener('keydown', handleKeyDown)
     return () => {
       document.removeEventListener('keydown', handleKeyDown)
     }
-  }, [handleRequestFullscreen])
+  }, [handleRequestFullscreen, handleShowNext, handleShowPrevious, handleTogglePlayback])
 
   const infoText = useMemo(() => {
     if (state.errorMessage) {
@@ -371,6 +477,17 @@ class PlaybackLoop {
     }
   }
 
+  public RestartCountdown(): void {
+    if (!this.active) {
+      return
+    }
+    if (this.timer !== undefined) {
+      window.clearTimeout(this.timer)
+      this.timer = undefined
+    }
+    this.ScheduleNext(this.paceMs)
+  }
+
   private ScheduleNext(delay: number): void {
     if (!this.active) {
       return
@@ -383,8 +500,7 @@ class PlaybackLoop {
 
   private async Iterate(): Promise<void> {
     try {
-      const entry = GET_RANDOM_ITEM(this.entries)
-      const image = await entry.source.FetchImage()
+      const image = await GalleryImagePicker.FetchRandom(this.entries)
       this.onError(undefined)
       this.onImage(image)
     } catch (error) {
