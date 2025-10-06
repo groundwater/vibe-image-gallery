@@ -1,6 +1,7 @@
 import { GalleryImage } from '../GalleryImage.mts'
 import { CHECK, IS_ARRAY, IS_NON_EMPTY, IS_RECORD, IS_STRING } from '../Assertions.mts'
 import { GET_RANDOM_ITEM } from '../Random.mts'
+import { SourcePresetGroup, SourcePresetGroupBuilder } from '../SourcePreset.mts'
 
 interface FlickrFeedEntry {
   readonly title: string
@@ -84,5 +85,32 @@ class FlickrFeedParser {
       return url
     }
     return `${url.slice(0, suffixIndex)}_b.${url.slice(suffixIndex + 3)}`
+  }
+}
+
+export class FlickrSourcePresets {
+  public static Groups(): readonly SourcePresetGroup[] {
+    return [
+      SourcePresetGroupBuilder.Build('Landscapes', 'flickr', [
+        'landscape',
+        'mountain sunrise',
+        'desert dusk'
+      ]),
+      SourcePresetGroupBuilder.Build('City Life', 'flickr', [
+        'architecture',
+        'cityscape night',
+        'urban reflections'
+      ]),
+      SourcePresetGroupBuilder.Build('Street Moments', 'flickr', [
+        'street photography',
+        'documentary street',
+        'black and white street'
+      ]),
+      SourcePresetGroupBuilder.Build('Wildlife', 'flickr', [
+        'wildlife',
+        'birds in flight',
+        'macro insects'
+      ])
+    ]
   }
 }

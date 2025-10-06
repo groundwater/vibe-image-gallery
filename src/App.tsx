@@ -11,7 +11,7 @@ import SourceForm from './components/SourceForm'
 import SourceList from './components/SourceList'
 import GalleryControls from './components/GalleryControls'
 import GalleryViewport from './components/GalleryViewport'
-import { SourcePresetEntry } from './lib/SourcePresetCatalog.mts'
+import { SourcePresetEntry } from './lib/SourcePreset.mts'
 import { GalleryImagePicker } from './lib/GalleryImagePicker.mts'
 
 type OptionalImage = GalleryImage | undefined

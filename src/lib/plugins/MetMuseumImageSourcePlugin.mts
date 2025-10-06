@@ -1,6 +1,7 @@
 import { GalleryImage } from '../GalleryImage.mts'
 import { CHECK, IS_ARRAY, IS_NON_EMPTY, IS_RECORD, IS_STRING } from '../Assertions.mts'
 import { GET_RANDOM_ITEM } from '../Random.mts'
+import { SourcePresetGroup, SourcePresetGroupBuilder } from '../SourcePreset.mts'
 
 interface MetMuseumImageDetails {
   readonly title: string
@@ -123,5 +124,27 @@ class MetMuseumObjectLoader {
       artist: artistValue,
       imageUrl: primaryImage
     }
+  }
+}
+
+export class MetMuseumSourcePresets {
+  public static Groups(): readonly SourcePresetGroup[] {
+    return [
+      SourcePresetGroupBuilder.Build('Paintings', 'met-museum', [
+        'impressionism',
+        'portrait',
+        'landscape painting'
+      ]),
+      SourcePresetGroupBuilder.Build('Sculpture & Armor', 'met-museum', [
+        'armor',
+        'bronze sculpture',
+        'classical sculpture'
+      ]),
+      SourcePresetGroupBuilder.Build('Decorative Arts', 'met-museum', [
+        'sunflower',
+        'ceramics',
+        'textiles'
+      ])
+    ]
   }
 }
