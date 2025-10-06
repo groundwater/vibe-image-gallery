@@ -7,12 +7,13 @@ interface GalleryViewportProps {
   readonly isFullscreen: boolean
   readonly isPlaying: boolean
   readonly showChrome: boolean
+  readonly showInfo: boolean
   readonly onTogglePlayback: () => void
   readonly onToggleFullscreen: () => void
 }
 
 export default function GalleryViewport(props: GalleryViewportProps): JSX.Element {
-  const { image, infoText, isFullscreen, isPlaying, showChrome, onTogglePlayback, onToggleFullscreen } = props
+  const { image, infoText, isFullscreen, isPlaying, showChrome, showInfo, onTogglePlayback, onToggleFullscreen } = props
   const className = isFullscreen ? 'gallery-viewport gallery-viewport--fullscreen' : 'gallery-viewport'
   const stageClassName = isFullscreen ? 'gallery-viewport__stage gallery-viewport__stage--fullscreen' : 'gallery-viewport__stage'
   const fullscreenIcon = isFullscreen ? <Minimize2 aria-hidden="true" /> : <Maximize2 aria-hidden="true" />
@@ -46,8 +47,12 @@ export default function GalleryViewport(props: GalleryViewportProps): JSX.Elemen
             <span className="sr-only">{fullscreenLabel}</span>
           </button>
         </div>
+        {showInfo && (
+          <div className="gallery-viewport__info" role="status" aria-live="polite">
+            {infoText}
+          </div>
+        )}
       </div>
-      {!isFullscreen && <p className="gallery-viewport__info">{infoText}</p>}
     </div>
   )
 }
