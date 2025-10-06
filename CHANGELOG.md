@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+- Add a GitHub Actions workflow that builds main and deploys the site to the `pages` branch for GitHub Pages hosting, and configure Vite to emit relative asset paths. (#18)
 - Add subreddit preset buttons for rapid source configuration, covering nature, city, synthetic, organic, aesthetic, and scholastic themes. (#3)
 - Keep the preset form fixed, scroll added sources independently, and provide a Clear button to remove every source at once.
 - Resize the gallery viewport with the window and ensure images scale to the available space. (#4)
