@@ -1,6 +1,7 @@
 import { GalleryImage } from '../GalleryImage.mts'
 import { CHECK, IS_ARRAY, IS_NON_EMPTY, IS_RECORD, IS_STRING } from '../Assertions.mts'
 import { GET_RANDOM_ITEM } from '../Random.mts'
+import { SourcePresetGroup, SourcePresetGroupBuilder } from '../SourcePreset.mts'
 
 interface WikimediaImageEntry {
   readonly title: string
@@ -86,5 +87,27 @@ class WikimediaCommonsParser {
       })
     }
     return entries
+  }
+}
+
+export class WikimediaCommonsSourcePresets {
+  public static Groups(): readonly SourcePresetGroup[] {
+    return [
+      SourcePresetGroupBuilder.Build('Sky Phenomena', 'wikimedia-commons', [
+        'aurora borealis',
+        'astronomy',
+        'space exploration'
+      ]),
+      SourcePresetGroupBuilder.Build('Wildlife', 'wikimedia-commons', [
+        'wildlife',
+        'birds in flight',
+        'marine life'
+      ]),
+      SourcePresetGroupBuilder.Build('Architecture', 'wikimedia-commons', [
+        'architecture',
+        'cathedrals',
+        'modern architecture'
+      ])
+    ]
   }
 }

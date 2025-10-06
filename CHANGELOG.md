@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+- Move source presets into their plugin cards with expanded Met and Wikimedia themes. (#21)
 - Add a GitHub Actions workflow that builds main, uploads the static artifact, and deploys it with GitHub Pages actions while keeping Vite asset paths relative. (#18)
 - Add subreddit preset buttons for rapid source configuration, covering nature, city, synthetic, organic, aesthetic, and scholastic themes. (#3)
 - Keep the preset form fixed, scroll added sources independently, and provide a Clear button to remove every source at once.

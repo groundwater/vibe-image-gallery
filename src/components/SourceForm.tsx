@@ -1,7 +1,11 @@
 import { FormEvent, useState, ChangeEvent } from 'react'
 import { GallerySourceKind } from '../lib/GallerySourceFactory.mts'
-import { SourcePresetCatalog, SourcePresetEntry } from '../lib/SourcePresetCatalog.mts'
+import { SourcePresetEntry, SourcePresetGroup } from '../lib/SourcePreset.mts'
 import { PageOptions } from '../lib/PageOptions.mts'
+import { RedditSourcePresets } from '../lib/plugins/RedditImageSourcePlugin.mts'
+import { FlickrSourcePresets } from '../lib/plugins/FlickrImageSourcePlugin.mts'
+import { WikimediaCommonsSourcePresets } from '../lib/plugins/WikimediaCommonsImageSourcePlugin.mts'
+import { MetMuseumSourcePresets } from '../lib/plugins/MetMuseumImageSourcePlugin.mts'
 
 interface SourceFormProps {
   readonly onAdd: (kind: GallerySourceKind, value: string) => void
@@ -9,7 +13,42 @@ interface SourceFormProps {
   readonly isDisabled: boolean
 }
 
-const presetGroups = SourcePresetCatalog.All()
+const redditPresetGroups = RedditSourcePresets.Groups()
+const flickrPresetGroups = FlickrSourcePresets.Groups()
+const wikimediaPresetGroups = WikimediaCommonsSourcePresets.Groups()
+const metPresetGroups = MetMuseumSourcePresets.Groups()
+
+interface PresetSectionProps {
+  readonly heading: string
+  readonly groups: readonly SourcePresetGroup[]
+  readonly isDisabled: boolean
+  readonly onAdd: (entries: readonly SourcePresetEntry[]) => void
+}
+
+function PresetSection({ heading, groups, isDisabled, onAdd }: PresetSectionProps): JSX.Element | null {
+  if (groups.length === 0) {
+    return null
+  }
+  return (
+    <div className="source-form__preset-section">
+      <h4 className="source-form__preset-subheading">{heading}</h4>
+      <div className="source-form__preset-list">
+        {groups.map((group) => (
+          <button
+            key={group.label}
+            type="button"
+            className="source-form__preset-button"
+            onClick={() => onAdd(group.entries)}
+            disabled={isDisabled}
+            title={group.entries.map((entry) => entry.value).join(', ')}
+          >
+            {group.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  )
+}
 
 export default function SourceForm({ onAdd, onAddPreset, isDisabled }: SourceFormProps): JSX.Element {
   const [redditValue, setRedditValue] = useState('')
@@ -46,28 +85,17 @@ export default function SourceForm({ onAdd, onAddPreset, isDisabled }: SourceFor
     <div className="source-form">
       <h2>Sources</h2>
       <div className="source-form__scroll">
-        <div className="source-form__item source-form__item--presets">
-          <h3 className="source-form__preset-heading">Presets</h3>
-          <div className="source-form__preset-list">
-            {presetGroups.map((group) => (
-              <button
-                key={group.label}
-                type="button"
-                className="source-form__preset-button"
-                onClick={() => handlePresetAdd(group.entries)}
-                disabled={isDisabled}
-                title={group.entries.map((entry) => entry.value).join(', ')}
-              >
-                {group.label}
-              </button>
-            ))}
-          </div>
-        </div>
         <form
           className="source-form__item"
           onSubmit={(event) => handleSubmit(event, 'reddit', redditValue, setRedditValue)}
         >
           <label htmlFor="reddit-input">Reddit Subreddit</label>
+          <PresetSection
+            heading="Reddit Presets"
+            groups={redditPresetGroups}
+            isDisabled={isDisabled}
+            onAdd={handlePresetAdd}
+          />
           <div className="source-form__controls">
             <input
               id="reddit-input"
@@ -109,6 +137,12 @@ export default function SourceForm({ onAdd, onAddPreset, isDisabled }: SourceFor
             onSubmit={(event) => handleSubmit(event, 'flickr', flickrValue, setFlickrValue)}
           >
             <label htmlFor="flickr-input">Flickr Tags</label>
+            <PresetSection
+              heading="Flickr Presets"
+              groups={flickrPresetGroups}
+              isDisabled={isDisabled}
+              onAdd={handlePresetAdd}
+            />
             <div className="source-form__controls">
               <input
                 id="flickr-input"
@@ -130,6 +164,12 @@ export default function SourceForm({ onAdd, onAddPreset, isDisabled }: SourceFor
             onSubmit={(event) => handleSubmit(event, 'wikimedia-commons', wikimediaValue, setWikimediaValue)}
           >
             <label htmlFor="wikimedia-input">Wikimedia Commons Search</label>
+            <PresetSection
+              heading="Wikimedia Presets"
+              groups={wikimediaPresetGroups}
+              isDisabled={isDisabled}
+              onAdd={handlePresetAdd}
+            />
             <div className="source-form__controls">
               <input
                 id="wikimedia-input"
@@ -151,6 +191,12 @@ export default function SourceForm({ onAdd, onAddPreset, isDisabled }: SourceFor
             onSubmit={(event) => handleSubmit(event, 'met-museum', metValue, setMetValue)}
           >
             <label htmlFor="met-input">The Met Museum Search</label>
+            <PresetSection
+              heading="Met Presets"
+              groups={metPresetGroups}
+              isDisabled={isDisabled}
+              onAdd={handlePresetAdd}
+            />
             <div className="source-form__controls">
               <input
                 id="met-input"

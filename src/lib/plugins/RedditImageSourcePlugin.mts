@@ -1,6 +1,7 @@
 import { GalleryImage } from '../GalleryImage.mts'
 import { CHECK, IS_ARRAY, IS_NON_EMPTY, IS_RECORD } from '../Assertions.mts'
 import { GET_RANDOM_ITEM } from '../Random.mts'
+import { SourcePresetGroup, SourcePresetGroupBuilder } from '../SourcePreset.mts'
 
 interface RedditPost {
   readonly title: string
@@ -129,5 +130,129 @@ class RedditListingParser {
 
   private static NormalizeUrl(value: string): string {
     return value.replace(/&amp;/g, '&')
+  }
+}
+
+export class RedditSourcePresets {
+  public static Groups(): readonly SourcePresetGroup[] {
+    return [
+      SourcePresetGroupBuilder.Build('Nature', 'reddit', [
+        'EarthPorn',
+        'BotanicalPorn',
+        'WaterPorn',
+        'SeaPorn',
+        'SkyPorn',
+        'FirePorn',
+        'DesertPorn',
+        'WinterPorn',
+        'AutumnPorn',
+        'WeatherPorn',
+        'GeologyPorn',
+        'SpacePorn',
+        'BeachPorn',
+        'MushroomPorn',
+        'SpringPorn',
+        'SummerPorn',
+        'LavaPorn',
+        'LakePorn'
+      ]),
+      SourcePresetGroupBuilder.Build('City', 'reddit', [
+        'CityPorn',
+        'ArchitecturePorn',
+        'SkylinePorn',
+        'Skyscrapers',
+        'UrbanPorn',
+        'UrbanExploration',
+        'AbandonedPorn'
+      ]),
+      SourcePresetGroupBuilder.Build('Synthetic', 'reddit', [
+        'CityPorn',
+        'VillagePorn',
+        'RuralPorn',
+        'ArchitecturePorn',
+        'HousePorn',
+        'CabinPorn',
+        'ChurchPorn',
+        'AbandonedPorn',
+        'CemeteryPorn',
+        'InfrastructurePorn',
+        'MachinePorn',
+        'CarPorn',
+        'F1Porn',
+        'MotorcyclePorn',
+        'MilitaryPorn',
+        'GunPorn',
+        'KnifePorn',
+        'BoatPorn',
+        'RidesPorn',
+        'DestructionPorn',
+        'ThingsCutInHalfPorn',
+        'StarshipPorn',
+        'ToolPorn',
+        'TechnologyPorn',
+        'BridgePorn',
+        'PolicePorn',
+        'SteamPorn',
+        'RetailPorn',
+        'SpaceFlightPorn',
+        'RoadPorn',
+        'DryDockPorn'
+      ]),
+      SourcePresetGroupBuilder.Build('Organic', 'reddit', [
+        'AnimalPorn',
+        'HumanPorn',
+        'EarthlingPorn',
+        'AdrenalinePorn',
+        'ClimbingPorn',
+        'SportsPorn',
+        'AgriculturePorn',
+        'TeaPorn',
+        'BonsaiPorn',
+        'FoodPorn',
+        'CulinaryPorn',
+        'DessertPorn'
+      ]),
+      SourcePresetGroupBuilder.Build('Aesthetic', 'reddit', [
+        'DesignPorn',
+        'RoomPorn',
+        'AlbumArtPorn',
+        'MetalPorn',
+        'MoviePosterPorn',
+        'TelevisionPosterPorn',
+        'ComicBookPorn',
+        'StreetArtPorn',
+        'AdPorn',
+        'ArtPorn',
+        'FractalPorn',
+        'InstrumentPorn',
+        'ExposurePorn',
+        'MacroPorn',
+        'MicroPorn',
+        'GeekPorn',
+        'MTGPorn',
+        'GamerPorn',
+        'PowerWashingPorn',
+        'AerialPorn',
+        'OrganizationPorn',
+        'FashionPorn',
+        'AVPorn',
+        'ApocalypsePorn',
+        'InfraredPorn',
+        'ViewPorn',
+        'HellscapePorn',
+        'SculpturePorn'
+      ]),
+      SourcePresetGroupBuilder.Build('Scholastic', 'reddit', [
+        'HistoryPorn',
+        'UniformPorn',
+        'BookPorn',
+        'NewsPorn',
+        'QuotesPorn',
+        'FuturePorn',
+        'FossilPorn',
+        'MegalithPorn',
+        'ArtefactPorn'
+      ])
+    ]
   }
 }
